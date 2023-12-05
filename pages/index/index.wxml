@@ -1,23 +1,66 @@
 <!--index.wxml-->
-<view class="container">
-  <view class="userinfo">
-    <block wx:if="{{canIUseOpenData}}">
-      <view class="userinfo-avatar" bindtap="bindViewTap">
-        <open-data type="userAvatarUrl"></open-data>
+<import src="../../templates/cart/cart.wxml"></import>
+
+  <view>
+    <view class="tabbar">
+      <view id="1" class="tabbox  {{menuID==1?'curtab':''}}" bindtap="menuClick">
+        <view class="tabico ico-recom {{menuID==1?'cur-recom':''}} "></view>
+        <text class="tabtit  {{menuID==1?'curtit':''}} ">今日推荐</text>
       </view>
-      <open-data type="userNickName"></open-data>
-    </block>
-    <block wx:elif="{{!hasUserInfo}}">
-      <button wx:if="{{canIUseGetUserProfile}}" bindtap="getUserProfile"> 获取头像昵称 </button>
-      <button wx:elif="{{canIUse}}" open-type="getUserInfo" bindgetuserinfo="getUserInfo"> 获取头像昵称 </button>
-      <view wx:else> 请使用1.4.4及以上版本基础库 </view>
-    </block>
-    <block wx:else>
-      <image bindtap="bindViewTap" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
-      <text class="userinfo-nickname">{{userInfo.nickName}}</text>
-    </block>
+      <view id="2" class="tabbox {{menuID==2?'curtab':''}}" bindtap="menuClick">
+        <view class="tabico ico-baby {{menuID==2?'cur-baby':''}}"></view>
+        <text class="tabtit  {{menuID==2?'curtit':''}}">时尚美妆</text>
+      </view>
+      <view id="3" class="tabbox {{menuID==3?'curtab':''}}" bindtap="menuClick">
+        <view class="tabico ico-new {{menuID==3?'cur-new':''}}">
+          <view class="point-tip "></view>
+        </view>
+        <!-- 选中状态添加cur-new -->
+        <text class="tabtit  {{menuID==3?'curtit':''}}">数码电器</text>
+      </view>
+      <view id="4" class="tabbox {{menuID==4?'curtab':''}}" bindtap="menuClick">
+        <view class="tabico ico-discount {{menuID==4?'cur-discount':''}}"></view>
+        <text class="tabtit {{menuID==4?'curtit':''}}">个护清洁</text>
+      </view>
+      <view id="5" class="tabbox {{menuID==5?'curtab':''}}" bindtap="menuClick">
+        <view class="tabico ico-notice {{menuID==5?'cur-notice':''}}"></view>
+        <text class="tabtit {{menuID==5?'curtit':''}}">数码电器</text>
+      </view>
+    </view>
   </view>
-  <view class="usermotto">
-    <text class="user-motto">{{motto}}</text>
+  <view class="pagebox">
+    <!-- 推荐页 -->
+    <view class="page {{menuID==1?'':'hide'}}"></view>
+    <swiper class="adbox" indicator-dots="{{indicatorDots}}" style="width: {{imagewidth}}px; height: {{imageheight}}px;" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}" circular="{{circular}}">
+      <block wx:for="{{imgUrls}}" wx:key="unique">
+        <swiper-item>
+          <image id="{{item.iTargetType}}{{item.sLink}}" style="width: {{imagewidth}}px; height: {{imageheight}}px;" src="{{item.sPicLink}}" class="slide-image" mode="aspectFit" data-gid="{{item.sLink}}" bindtap="bigImageClick" bindload="imageLoad" />
+        </swiper-item>
+      </block>
+    </swiper>
+    <!-- 精品推荐 -->
+    <view id="index_recommend" class="listbox {{showRecommendView?'listboxhide':''}}">
+      <text class="dj-tit">精品推荐</text>
+      <view class="djlist cf">
+        <!-- 道具列表 -->
+        <block wx:for="{{index_recommends}}" wx:key="unique">
+          <view class="djbox">
+            <view class="comico djmark">热卖</view>
+            <view id="{{item._id}}" class="dj-link" bindtap="bigImageClick">
+              <view class="djimgbox">
+                <image class="djimg" mode="widthFix" src="{{item.sPicLink}}"></image>
+              </view>
+              <text class="djname">{{item.sDescribe}}</text>
+              <view class="pricebox">
+                <text class="djpri">￥{{item.iPriceReal}}元</text>
+                <text class="djoldpri">￥{{item.iOriPrice}}元</text>
+              </view>
+            </view>
+            <view id="{{item.iMallId}}" class="comico btn-cart" bindtap="bindCartTap">购物车
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
   </view>
-</view>
+  <template is="cart" data="{{shoppingCart}}"></template>

@@ -1,48 +1,106 @@
 // index.js
 // 获取应用实例
-const app = getApp()
+
+import imageUtil from '../../utils/util.js';
+import shoppingCart from '../../templates/cart/cart';
+import cart from '../../utils/cart';
+
+var app = getApp()
 
 Page({
   data: {
-    motto: 'Hello World',
-    userInfo: {},
-    hasUserInfo: false,
-    canIUse: wx.canIUse('button.open-type.getUserInfo'),
-    canIUseGetUserProfile: false,
-    canIUseOpenData: wx.canIUse('open-data.type.userAvatarUrl') && wx.canIUse('open-data.type.userNickName') // 如需尝试获取用户信息可改为false
-  },
-  // 事件处理函数
-  bindViewTap() {
-    wx.navigateTo({
-      url: '../logs/logs'
-    })
+    "menuID": 1,
+    "indicatorDots": true,
+    "autoplay": true,
+    "circular": true,
+    "interval": 3000,
+    "imgUrls": [{
+      "id": 0,
+      "sPicLink": "https://6465-dev-hnrfx-1257967285.tcb.qcloud.la/banner/slide1.png",
+      "sLink": "1000",
+    }, {
+      "id": 1,
+      "sPicLink": "https://6465-dev-hnrfx-1257967285.tcb.qcloud.la/banner/slide2.png",
+      "sLink": "1001",
+    }],
+    "index_recommends":[{
+      "sDescribe": "展示专用商品1",
+      "iMallId": "1000",
+      "sPicLink": "/images/list/sku1.png",
+      "iOriPrice": "150",
+      "iPriceReal": "113"
+    },{
+      "sDescribe": "展示专用商品2",
+      "iMallId": "1001",
+      "sPicLink": "/images/list/sku2.png",
+      "iOriPrice": "350",
+      "iPriceReal": "313"
+    },{
+      "sDescribe": "展示专用商品1",
+      "iMallId": "1000",
+      "sPicLink": "/images/list/sku1.png",
+      "iOriPrice": "150",
+      "iPriceReal": "113"
+    },{
+      "sDescribe": "展示专用商品2",
+      "iMallId": "1001",
+      "sPicLink": "/images/list/sku2.png",
+      "iOriPrice": "350",
+      "iPriceReal": "313"
+    }
+
+    ]
   },
   onLoad() {
-    if (wx.getUserProfile) {
-      this.setData({
-        canIUseGetUserProfile: true
-      })
-    }
+    cart.refreshCart();
+    //this.getRecommendGoodsList();
   },
-  getUserProfile(e) {
-    // 推荐使用wx.getUserProfile获取用户信息，开发者每次通过该接口获取用户个人信息均需用户确认，开发者妥善保管用户快速填写的头像昵称，避免重复弹窗
-    wx.getUserProfile({
-      desc: '展示用户信息', // 声明获取用户个人信息后的用途，后续会展示在弹窗中，请谨慎填写
+  onReady() {
+    // 设置 scroll-view 高度，才能进行滚动
+    wx.getSystemInfo({
       success: (res) => {
-        console.log(res)
         this.setData({
-          userInfo: res.userInfo,
-          hasUserInfo: true
-        })
+          scrollHeight: res.screenHeight * res.pixelRatio,
+          bannerHeight: 0.175 * res.windowWidth, // 原始图片是 640*112
+          imagewidth: res.windowWidth,
+          imageheight: 0.440625 * res.windowWidth
+        });
       }
+    });
+  },
+  onPullDownRefresh() {
+    wx.stopPullDownRefresh();
+    // 刷新列表
+    //this.getRecommendGoodsList(true);
+  },
+
+  scrollToLower() {
+    //this.getRecommendGoodsList();
+  },
+
+  menuClick(e){
+    var id = e.currentTarget.id;
+    this.setData({
+      menuID: id,
     })
   },
-  getUserInfo(e) {
-    // 不推荐使用getUserInfo获取用户信息，预计自2021年4月13日起，getUserInfo将不再弹出弹窗，并直接返回匿名的用户个人信息
-    console.log(e)
+  imageLoad(e) {
+    var imageSize = imageUtil.imageUtil(e)
     this.setData({
-      userInfo: e.detail.userInfo,
-      hasUserInfo: true
+      imagewidth: imageSize.imageWidth,
+      imageheight: imageSize.imageHeight
     })
-  }
+  },
+  bigImageClick(e) {
+    let id = e.currentTarget.id
+    wx.navigateTo({
+      url: '/pages/detail/detail?id=' + id
+    });
+
+  },
+  bindCartTap(e) {
+    let id = e.currentTarget.id;
+    console.log('====goodsId====', id);
+    shoppingCart.init(this, id);
+  },
 })
